@@ -58,8 +58,8 @@
                         </div>
                         <div class="col-lg-6 mb-0 d-flex align-items-center">
                             <div class="text-align-left">
-                                <h1 class="h1">Proident occaecat</h1>
-                                <h3 class="h2">Aliquip ex ea commodo consequat</h3>
+                                <h1 class="h1">Gym and popular fashion</h1>
+                                <h3 class="h2">Accessory and watches</h3>
                                 <p>
                                     With a commitment to quality and style, we bring you fashion that is both functional and statement-worthy.
                                     Elevate your wardrobe with pieces that embody modern sophistication and everyday practicality.
@@ -77,8 +77,8 @@
                         </div>
                         <div class="col-lg-6 mb-0 d-flex align-items-center">
                             <div class="text-align-left">
-                                <h1 class="h1">Repr in voluptate</h1>
-                                <h3 class="h2">Ullamco laboris nisi ut </h3>
+                                <h1 class="h1">Shopping online</h1>
+                                <h3 class="h2">Elevate your style, embrace simplicity. </h3>
                                 <p>
                                 Discover a shopping experience that blends minimalism with contemporary fashion, ensuring you always look refined without unnecessary complexity.
                                 Whether you're searching for the perfect statement accessory, sleek outfit, or stylish footwear, we’ve got you covered.

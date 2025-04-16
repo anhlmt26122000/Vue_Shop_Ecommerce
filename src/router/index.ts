@@ -3,6 +3,8 @@ import Router from "vue-router";
 import LoginPage from "@/components/LoginPage.vue";
 import RegisterPage from "@/components/RegisterPage.vue";
 import HomePage from "@/components/HomePage.vue";
+import AboutPage from "@/components/AboutPage.vue";
+import AdminPage from "@/components/AdminPage.vue";
 
 Vue.use(Router);
 
@@ -23,6 +25,16 @@ export default new Router({
       path: "/home",
       name: "HomePage",
       component: HomePage,
+    },
+    {
+      path: "/about",
+      name: "AboutPage",
+      component: AboutPage,
+    },
+    {
+      path: "/admin",
+      name: "AdminPage",
+      component: AdminPage,
     },
   ],
 });

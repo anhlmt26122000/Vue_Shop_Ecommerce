@@ -8,15 +8,15 @@
                 <ul class="list-unstyled text-light footer-link-list">
                     <li>
                         <i class="fas fa-map-marker-alt fa-fw"></i>
-                        123 Consectetur at ligula 10660
+                        Mitec Building, Duong Dinh Nghe, Yen Hoa Ward, Cau Giay District, Hanoi, Vietnam
                     </li>
                     <li>
                         <i class="fa fa-phone fa-fw"></i>
-                        <a class="text-decoration-none" href="tel:010-020-0340">010-020-0340</a>
+                        <a class="text-decoration-none" href="tel:012-345-6789">012-345-6789</a>
                     </li>
                     <li>
                         <i class="fa fa-envelope fa-fw"></i>
-                        <a class="text-decoration-none" href="mailto:info@company.com">info@company.com</a>
+                        <a class="text-decoration-none" href="mailto:anhlmt@newwave.com.vn">anhlmt@newwave.com.vn</a>
                     </li>
                 </ul>
             </div>
@@ -24,13 +24,9 @@
             <div class="col-md-4 pt-5">
                 <h2 class="h2 text-light border-bottom pb-3 border-light">Products</h2>
                 <ul class="list-unstyled text-light footer-link-list">
-                    <li><a class="text-decoration-none" href="#">Luxury</a></li>
-                    <li><a class="text-decoration-none" href="#">Sport Wear</a></li>
-                    <li><a class="text-decoration-none" href="#">Men's Shoes</a></li>
-                    <li><a class="text-decoration-none" href="#">Women's Shoes</a></li>
-                    <li><a class="text-decoration-none" href="#">Popular Dress</a></li>
-                    <li><a class="text-decoration-none" href="#">Gym Accessories</a></li>
-                    <li><a class="text-decoration-none" href="#">Sport Shoes</a></li>
+                    <li v-for="category in categories" :key="category.id">
+                    <a class="text-decoration-none" :href="`#${category.name}`">{{ category.name }}</a>
+                    </li>
                 </ul>
             </div>
 
@@ -70,7 +66,7 @@
             <div class="col-auto">
                 <label class="sr-only" for="subscribeEmail">Email address</label>
                 <div class="input-group mb-2">
-                    <input type="text" class="form-control bg-dark border-light" id="subscribeEmail" placeholder="Email address">
+                    <input type="text" class="form-control bg-dark border-light" id="subscribeEmail" placeholder="Email address" style="color: white;">
                     <div class="input-group-text btn-success text-light">Subscribe</div>
                 </div>
             </div>
@@ -83,7 +79,6 @@
                 <div class="col-12">
                     <p class="text-left text-light">
                         Copyright &copy; 2025  Zento Shop
-                        | Designed by <a rel="sponsored" href="https://templatemo.com" target="_blank">Zento</a>
                     </p>
                 </div>
             </div>
@@ -94,18 +89,40 @@
   </template>
   
   <script lang="ts">
+  import axios from 'axios';
   import Vue from "vue";
   
   export default Vue.extend({
-    name: "AppFooter",
-  });
+  data() {
+    return {
+      categories: [] as { id: number; name: string }[], // Directly defining the array type without an interface
+    };
+  },
+  created() {
+    // Lấy token từ localStorage
+    const token = localStorage.getItem("authToken");
+
+    // Nếu token tồn tại, thực hiện yêu cầu với token trong header
+    if (token) {
+      axios.get('http://localhost:8080/api/categories', {
+        headers: {
+          'Authorization': `Bearer ${token}`  // Gửi token qua header Authorization
+        }
+      })
+      .then((response) => {
+        // Nếu API trả về dữ liệu hợp lệ
+        this.categories = response.data.result;
+      })
+      .catch((error) => {
+        console.error('Error fetching categories:', error);
+      });
+    } else {
+      console.error('No auth token found');
+    }
+  },
+});
   </script>
 
-  <!-- Start Script -->
-<script src="@/assets/js/jquery-1.11.0.min.js"></script>
-<script src="@/assets/js/jquery-migrate-1.2.1.min.js"></script>
-<script src="@/assets/js/bootstrap.bundle.min.js"></script>
-<script src="@/assets/js/templatemo.js"></script>
-<script src="@/assets/js/custom.js"></script>
-<!-- End Script -->
+
+
   
