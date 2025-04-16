@@ -33,8 +33,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import authService from "@/services/authService"; // Đảm bảo đường dẫn này đúng
-import type { AuthenticationResponse } from "@/types/auth"; // Import kiểu nếu cần
+import axios from 'axios';
 import "@/assets/css/style.css";
 
 export default Vue.extend({
@@ -48,51 +47,43 @@ export default Vue.extend({
     };
   },
   mounted() {
-    document.title = "Login";
+    document.title = "Login"; // Đặt tiêu đề trang
   },
   methods: {
     goToRegister(): void {
       if (this.loading) return; // Không cho chuyển trang khi đang login
       this.$router.push("/register");
     },
-    async handleLogin(): Promise<void> {
-      // Kiểm tra lại nếu cần (dù đã có required)
-      if (!this.username || !this.password) {
-        this.errorMessage = "Please enter both username and password.";
-        return;
-      }
-
-      this.loading = true; // Bắt đầu loading
-      this.errorMessage = ""; // Xóa lỗi cũ
+    async handleLogin() {
+      this.loading = true; // Bật loading khi bắt đầu đăng nhập
+      this.errorMessage = ""; // Reset thông báo lỗi trước khi gửi yêu cầu
 
       try {
-        const credentials = {
+        // Gửi yêu cầu POST đến API kiểm tra username và password
+        const response = await axios.post("http://localhost:8080/api/auth/token", {
           username: this.username,
           password: this.password,
-        };
-        const authResult: AuthenticationResponse = await authService.login(credentials);
+        });
 
-        if (authResult && authResult.token) {
-          // 1. Lưu token (ví dụ: vào localStorage)
-          localStorage.setItem("authToken", authResult.token);
-          console.log("Login successful, token stored.");
+        // Kiểm tra nếu có token trong response (điều kiện có thể thay đổi tuỳ API của bạn)
+        if (response.data.result.token){
+          // Lưu token vào localStorage hoặc Vuex nếu cần thiết
+          localStorage.setItem("authToken", response.data.result.token);
 
-          // (Tùy chọn) Cập nhật trạng thái global (Vuex/Pinia) nếu có
-
-          // 2. Điều hướng đến trang được bảo vệ (ví dụ: Dashboard)
-          // Đảm bảo bạn đã cấu hình route '/dashboard' trong router
-          this.$router.push("/dashboard");
-
+          // Redirect đến trang HomePage.vue
+          this.$router.push("/home");
         } else {
-          // Trường hợp API trả về thành công nhưng không có token (ít xảy ra với logic hiện tại)
-          this.errorMessage = "Login failed: No token received.";
+          // Nếu không có token, thông báo lỗi
+          this.errorMessage = "Invalid username or password";
         }
-      } catch (error: any) {
-        // Hiển thị lỗi từ authService (đã bao gồm message từ backend nếu có)
-        this.errorMessage = error.message || "Login failed. Please check your credentials or server status.";
-        console.error("Login failed:", error);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+          this.errorMessage = 'Incorrect username or password. Please try again.';
+        } else {
+          this.errorMessage = 'An error occurred. Please try again later.';
+        }
       } finally {
-        this.loading = false; // Kết thúc loading dù thành công hay thất bại
+        this.loading = false; // Tắt loading khi hoàn tất
       }
     },
   },
