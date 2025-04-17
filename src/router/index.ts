@@ -4,7 +4,9 @@ import LoginPage from "@/components/LoginPage.vue";
 import RegisterPage from "@/components/RegisterPage.vue";
 import HomePage from "@/components/HomePage.vue";
 import AboutPage from "@/components/AboutPage.vue";
-import AdminPage from "@/components/AdminPage.vue";
+import AdminCategoryPage from "@/components/AdminCategoryPage.vue";
+import AdminProductPage from "@/components/AdminProductPage.vue";
+import AdminUserPage from "@/components/AdminUserPage.vue";
 
 Vue.use(Router);
 
@@ -32,9 +34,19 @@ export default new Router({
       component: AboutPage,
     },
     {
-      path: "/admin",
-      name: "AdminPage",
-      component: AdminPage,
+      path: "/adminCategory",
+      name: "AdminCategoryPage",
+      component: AdminCategoryPage,
+    },
+    {
+      path: "/adminProduct",
+      name: "AdminProductPage",
+      component: AdminProductPage,
+    },
+    {
+      path: "/adminUser",
+      name: "AdminUserPage",
+      component: AdminUserPage,
     },
   ],
 });
