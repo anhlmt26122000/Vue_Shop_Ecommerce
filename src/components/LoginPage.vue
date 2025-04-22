@@ -10,13 +10,14 @@
 
       <label for="password">Password</label>
       <!-- Sử dụng v-model để liên kết dữ liệu -->
-      <input type="password" placeholder="Password" id="password" v-model="password" required>
+      <input type="password" placeholder="Password" id="password" v-model="password" required autocomplete="current-password">
 
       <!-- Vô hiệu hóa nút khi đang loading, thay đổi text -->
       <button type="submit" :disabled="loading">
         {{ loading ? 'Logging in...' : 'Log In' }}
       </button>
-      <button type="button" class="register" @click="goToRegister" :disabled="loading">Register</button> <!-- Thêm type="button" để không submit form -->
+      <button type="button" class="register" @click="goToRegister" :disabled="loading">Register</button>
+      <!-- Thêm type="button" để không submit form -->
 
       <!-- Hiển thị thông báo lỗi nếu có -->
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -33,9 +34,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import axios from 'axios';
-import "@/assets/css/style.css";
-
+import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
+interface JwtPayload {
+  iss: string;
+  sub: string;
+  exp: number;
+  iat: number;
+  jti: string;
+  scope: string;  // Đảm bảo có 'scope' trong JwtPayload
+}
 export default Vue.extend({
   name: "LoginPage",
   data() {
@@ -49,11 +57,13 @@ export default Vue.extend({
   mounted() {
     document.title = "Login"; // Đặt tiêu đề trang
   },
+  
   methods: {
     goToRegister(): void {
       if (this.loading) return; // Không cho chuyển trang khi đang login
       this.$router.push("/register");
     },
+    
     async handleLogin() {
       this.loading = true; // Bật loading khi bắt đầu đăng nhập
       this.errorMessage = ""; // Reset thông báo lỗi trước khi gửi yêu cầu
@@ -65,18 +75,32 @@ export default Vue.extend({
           password: this.password,
         });
 
-        // Kiểm tra nếu có token trong response (điều kiện có thể thay đổi tuỳ API của bạn)
-        if (response.data.result.token){
-          // Lưu token vào localStorage hoặc Vuex nếu cần thiết
-          localStorage.setItem("authToken", response.data.result.token);
 
-          // Redirect đến trang HomePage.vue
-          this.$router.push("/home");
+        // Kiểm tra nếu có token trong response (điều kiện có thể thay đổi tuỳ API của bạn)
+        const userToken = response.data.result.token;
+        if (userToken) {
+          // Lưu token vào localStorage hoặc Vuex nếu cần thiết
+          localStorage.setItem("authToken", userToken);
+          // Giải mã token
+          const decodedToken = jwtDecode<JwtPayload>(userToken); 
+
+          // Kiểm tra các thông tin trong token
+          const userScope = decodedToken.scope ; // Lấy scope từ token
+
+          // Kiểm tra quyền truy cập và chuyển hướng
+          if (userScope.trim() === "ROLE_ADMIN") {
+            // Redirect to AdminCategoryPage.vue
+            this.$router.push("/adminCategory");
+          } else {
+            //Redirect đến trang HomePage.vue
+            this.$router.push("/home");
+          }
         } else {
           // Nếu không có token, thông báo lỗi
           this.errorMessage = "Invalid username or password";
         }
       } catch (error) {
+        // Kiểm tra lỗi từ axios
         if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
           this.errorMessage = 'Incorrect username or password. Please try again.';
         } else {
@@ -111,22 +135,22 @@ h3 label {
   margin-bottom: 20px;
   font-size: 24px;
   text-align: center;
-  color:black;
+  color: black;
 }
+
 .login-page {
   background-image: url('https://raw.githubusercontent.com/CiurescuP/LogIn-Form/main/bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  min-height: 100vh; /* đảm bảo full chiều cao */
+  min-height: 100vh;
+  /* đảm bảo full chiều cao */
   display: flex;
   align-items: center;
   justify-content: center;
 }
-button{
+
+button {
   margin-top: 10px;
 }
-
 </style>
-
-
