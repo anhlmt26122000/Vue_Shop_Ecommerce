@@ -111,7 +111,7 @@
 
                     <div>
                         <button type="button" @click="closeAddForm" class="close">Close</button>
-                        <button type="submit" class="submit">Add</button>
+                        <button type="submit" class="submit" :disabled="isSubmitting">Add</button>
                     </div>
                 </form>
             </div>
@@ -228,6 +228,7 @@ export default Vue.extend({
             categories: [] as {
                 id: number; name: string; description: string; image: string;
             }[], // Danh sách categories
+            isSubmitting: false,  // Biến điều khiển trạng thái gửi form
 
         };
     },
@@ -251,8 +252,14 @@ export default Vue.extend({
                     .then((response) => {
                         // Nếu API trả về dữ liệu hợp lệ
                         this.products = response.data.result.content;
-                        this.totalItems = response.data.result.totalElements;  // Tổng số sản phẩm từ API
-                        this.totalPages = response.data.result.totalPages // Tổng số page từ API
+                        this.totalItems = response.data.result.totalElements;  // Tổng số sản phẩm từ 
+                        if(response.data.result.totalElements === 0) {
+                            this.successMessage = "No product found";  // Hiển thị thông báo không tìm thấy sản phẩm
+                            setTimeout(() => {
+                                this.successMessage = '';  // Ẩn thông báo sau 5 giây
+                            }, 7000);
+                        }
+                        else this.totalPages = response.data.result.totalPages // Tổng số page từ API
                     })
                     .catch((error) => {
                         console.error('Error fetching products:', error);
@@ -328,6 +335,7 @@ export default Vue.extend({
         },
         // Function to handle the submission of the form
         addProduct() {
+            this.isSubmitting = true;  // Đặt trạng thái gửi form là true
             // Nếu token tồn tại, thực hiện yêu cầu với token trong header
             if (this.token) {
                 const productData = {
@@ -352,9 +360,13 @@ export default Vue.extend({
                             this.successMessage = '';  // Ẩn thông báo sau 5 giây
                         }, 7000);
                         this.closeAddForm();  // Đóng form sau khi gửi yêu cầu
+                        this.fetchProducts
                     })
                     .catch((error) => {
                         console.error('Error fetching categories:', error);
+                    })
+                    .finally(() => {
+                        this.isSubmitting = false;  // Đặt trạng thái gửi form là false sau khi hoàn thành
                     });
             } else {
                 this.$router.push('/');

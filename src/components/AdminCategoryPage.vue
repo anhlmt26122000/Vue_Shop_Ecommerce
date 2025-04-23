@@ -151,7 +151,7 @@ export default Vue.extend({
         return {
             currentPage: 1,  // Trang hiện tại
             itemsPerPage: 5,  // Số lượng mục trên mỗi trang
-            totalPages: 1, // Tổng số trang, mặc định là 1
+            totalPages: 0, // Tổng số trang, mặc định là 1
             totalItems: 0, // Tổng số sản phẩm, sẽ được cập nhật từ API
             token: localStorage.getItem("authToken") || '',  // Khai báo token tại data
             categories: [] as { id: number; name: string; description: string; image: string }[], // Directly defining the array type without an interface
@@ -268,6 +268,7 @@ export default Vue.extend({
                             this.successMessage = '';  // Ẩn thông báo sau 5 giây
                         }, 7000);
                         this.closeAddForm();  // Đóng form sau khi gửi yêu cầu
+                        this.fetchCategories
                     })
                     .catch((error) => {
                         console.error('Error fetching categories:', error);
