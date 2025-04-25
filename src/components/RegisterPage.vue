@@ -14,6 +14,19 @@
     <label for="password">Confirm Password</label>
     <input type="password" placeholder="Confirm Password" id="confirm-password" required v-model="confirmPassword">
 
+    <label for="email">Email</label>
+    <input type="email" placeholder="Email" id="email" required v-model="email">
+
+    <label for="first-name">First Name</label>
+    <input type="text" placeholder="First Name" id="first-name" required v-model="firstName">
+
+    <label for="last-name">Last Name</label>
+    <input type="text" placeholder="Last Name" id="last-name" required v-model="lastName">
+
+    <label for="address">Address</label>
+    <input type="text" placeholder="Address" id="address" required v-model="address">
+
+
   <button type="submit" :disabled="loading">Register</button>
   <button  @click="goToLoginPage">Back to Login Page</button>
   <p v-if="errorMessage" :class="messageType" class="error-message">
@@ -48,6 +61,10 @@ export default Vue.extend({
       username: '',
       password: '',
       confirmPassword: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      address: '',
       errorMessage: '',
       messageType: '',
       loading: false,  // Trạng thái loading
@@ -65,7 +82,11 @@ export default Vue.extend({
       try {
         const response = await axios.post('http://localhost:8080/api/users', {
           username: this.username,
-          password: this.password
+          password: this.password,
+          email: this.email,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          address: this.address
         });
 
         if (response.status === 200) {
@@ -133,6 +154,10 @@ button:disabled {
   padding: 20px;
   border-radius: 5px;
   text-align: center;
+}
+label {
+  display: block;
+  margin-top: 10px;
 }
 </style>
 

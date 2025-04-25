@@ -464,7 +464,7 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped>
+<!-- <style scoped>
 * {
     margin: 0;
     padding: 0;
@@ -782,4 +782,4 @@ span {
     margin: 0 10px;
     font-weight: bold;
 }
-</style>
+</style> -->
