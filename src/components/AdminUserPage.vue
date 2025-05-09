@@ -1,18 +1,10 @@
 <template>
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <h2>Admin Dashboard</h2>
-            <ul>
-                <li><router-link to="/adminCategory" class="side-category">Categories</router-link></li>
-                <li><router-link to="/adminProduct" class="side-product">Products</router-link></li>
-                <li><router-link to="/adminUser" class="side-category">Users</router-link></li>
-            </ul>
-        </div>
-
+        <AdminNav /> <!-- Use the AdminNav component here -->
         <!-- Main Content -->
         <div class="main-content">
-            <button class="btn-logout">Logout</button>
+            
             <div id="users" class="content-section">
                 <h3>Users Management</h3>
                 <p>Manage your users here.</p>
@@ -39,8 +31,10 @@
                             <td>{{ user.firstName }}</td>
                             <td>{{ user.lastName }}</td>
                             <td>{{ user.address }}</td>
-                            <td><a href="abc"><img src="@/assets/img/pencil.png" class="action" title="Edit"></a>
-                                <a href="abc"><img src="@/assets/img/bin.png" class="action" title="Delete"></a>
+                            <td><a href="#" @click.prevent="openEditForm(user.id)"><img src="@/assets/img/pencil.png"
+                                        class="action" title="Edit"></a>
+                                <a href="#" @click.prevent="openDeleteConfirm(user.id)"><img src="@/assets/img/bin.png"
+                                        class="action" title="Delete"></a>
                             </td>
                         </tr>
                     </tbody>
@@ -103,54 +97,60 @@
                         <button type="button" @click="closeAddForm" class="close">Close</button>
                         <button type="submit" class="submit" :disabled="isSubmitting">Add</button>
                     </div>
-                    
+
                 </form>
             </div>
         </div>
 
-        <!-- Popup form for Edit Product -->
+        <!-- Popup form for Edit User -->
         <div v-if="showEditForm" class="popup-form">
             <div class="form-container">
                 <form @submit.prevent="editUser" class="user-form">
-                    <h3>Edit Product</h3>
-                    <div>
-                        <label for="name">Name:</label>
-                        <input v-model="editedUser.name" type="text" id="name" required />
+                    <h3>Edit User</h3>
+                    <div class="form-group">
+                        <label for="username">UserName:</label>
+                        <input v-model="editedUser.username" type="text" id="username" required />
                     </div>
 
-                    <div>
-                        <label for="description">Description:</label>
-                        <textarea v-model="editedUser.description" id="description"></textarea>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input v-model="editedUser.password" type="password" id="password">
                     </div>
 
-                    <div>
-                        <label for="image">Image:</label>
-                        <input type="file" @change="onFileChange($event, 'editedProduct')" id="image" />
-                        <!-- Hiển thị hình ảnh nếu có -->
-                        <div v-if="editedProduct.image">
-                            <img :src="require(`@/assets/img/${editedProduct.image}`)" alt="Selected Image" />
-                        </div>
-                        <span v-else>No image selected</span>
-
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input v-model="editedUser.confirmPassword" type="password" id="confirm-password">
                     </div>
 
-                    <div>
-                        <label for="price">Price:</label>
-                        <input v-model="editedProduct.price" type="number" id="price" required />
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input v-model="editedUser.email" id="email" type="text">
                     </div>
 
-                    <div>
-                        <label for="stock">Stock:</label>
-                        <input v-model="editedProduct.stock" type="number" id="stock" required />
+                    <div class="form-group">
+                        <label for="first-name">First Name:</label>
+                        <input v-model="editedUser.firstName" id="first-name" type="text">
                     </div>
 
-                    <div>
-                        <button type="button" @click="closeEditForm" class="close">Close</button>
-                        <button type="submit" class="submit">Edit</button>
+                    <div class="form-group">
+                        <label for="last-name">Last Name:</label>
+                        <input v-model="editedUser.lastName" id="last-name" type="text">
                     </div>
+
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <textarea v-model="editedUser.address" id="address"></textarea>
+                    </div>
+
                     <p v-if="errorMessage" :class="messageType" class="error-message">
                         {{ errorMessage }}
                     </p>
+
+                    <div>
+                        <button type="button" @click="closeEditForm" class="close">Close</button>
+                        <button type="submit" class="submit" :disabled="isSubmitting">Edit</button>
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -163,10 +163,10 @@
         <!-- Popup confirm Delete -->
         <div v-if="showDeleteConfirm" class="popup-confirm">
             <div class="popup-container">
-                <h3>Are you sure you want to delete this Product?</h3>
+                <h3>Are you sure you want to delete this User?</h3>
                 <div>
                     <button @click="closeDeleteConfirm" class="close">Close</button>
-                    <button @click="deleteProduct">Delete</button>
+                    <button @click="deleteUser">Delete</button>
                 </div>
             </div>
         </div>
@@ -176,9 +176,13 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import AdminNav from "@/components/AdminNav.vue"; // Import AdminNav component
 
 export default Vue.extend({
     name: "AdminUserPage",
+    components: {
+    AdminNav, 
+    },
     data() {
         return {
             currentPage: 1,  // Trang hiện tại
@@ -187,7 +191,7 @@ export default Vue.extend({
             totalItems: 0, // Tổng số sản phẩm, sẽ được cập nhật từ API
             token: localStorage.getItem("authToken") || '',  // Khai báo token tại data
             users: [] as {
-                id: string; username: string; email: string; firstName: string; lastName: string;
+                id: string; username: string; password: string; email: string; firstName: string; lastName: string;
                 address: string
             }[], // Directly defining the array type without an interface
             showAddForm: false,
@@ -206,6 +210,8 @@ export default Vue.extend({
             editedUser: {
                 id: '',
                 username: '',
+                password: '',
+                confirmPassword: '',
                 email: '',
                 firstName: '',
                 lastName: '',
@@ -213,7 +219,7 @@ export default Vue.extend({
             },
             successMessage: '',
             showDeleteConfirm: false,
-            userToDelete: null as number | null,
+            userToDelete: '',
             isSubmitting: false,
             errorMessage: '',
             messageType: '',
@@ -279,11 +285,11 @@ export default Vue.extend({
                 address: ''
             };
         },
-        openEditForm(userId: number) {
-            // Tìm product cần chỉnh sửa và điền vào form
-            const user = this.users.find(u => u.id === userId.toString());
+        openEditForm(userId: string) {
+            // Tìm user cần chỉnh sửa và điền vào form
+            const user = this.users.find(u => u.id === userId);
             if (user) {
-                this.editedUser = { ...user };  // Sao chép thông tin sản phẩm vào editedUser;
+                this.editedUser = { ...user, confirmPassword: '' };  // Sao chép thông tin sản phẩm vào editedUser;
                 this.showEditForm = true;
             }
         },
@@ -293,6 +299,8 @@ export default Vue.extend({
             this.editedUser = {
                 id: '',
                 username: '',
+                password: '',
+                confirmPassword: '',
                 email: '',
                 firstName: '',
                 lastName: '',
@@ -341,9 +349,16 @@ export default Vue.extend({
             }
         },
         editUser() {
+            if (this.editedUser.password !== this.editedUser.confirmPassword) {
+                this.showMessage('Passwords do not match', 'error');
+                return;
+            }
+            this.isSubmitting = true;  // Bắt đầu gửi yêu cầu
+            // Nếu token tồn tại, thực hiện yêu cầu với token trong header
             if (this.token) {
                 const userData = {
                     username: this.editedUser.username,
+                    password: this.editedUser.password,
                     email: this.editedUser.email,
                     firstName: this.editedUser.firstName,
                     lastName: this.editedUser.lastName,
@@ -377,13 +392,42 @@ export default Vue.extend({
         showMessage(errorMessage: string, type: string) {
             this.errorMessage = errorMessage;
             this.messageType = type;
-        }
+        },
+        openDeleteConfirm(userId: string) {
+            this.userToDelete = userId;  // Lưu ID của sản phẩm cần xóa
+            this.showDeleteConfirm = true;  // Hiển thị popup xác nhận xóa
+        },
+        closeDeleteConfirm() {
+            this.showDeleteConfirm = false;  // Đóng popup xác nhận xóa
+            this.userToDelete = '';  // Đặt lại ID sản phẩm cần xóa
+        },
+        deleteUser() {
+            if (this.userToDelete) {
+                axios.delete(`http://localhost:8080/api/users/${this.userToDelete}`, {
+                    headers: {
+                        'Authorization': `Bearer ${this.token}`  // Gửi token qua header Authorization
+                    }
+                })
+                    .then(() => {
+                        // Nếu API trả về dữ liệu hợp lệ
+                        this.users = this.users.filter(user => user.id !== (this.userToDelete as string));  // Ép kiểu nếu cần thiết
+                        this.successMessage = "User deleted successfully!";  // Hiển thị thông báo thành công
+                        setTimeout(() => {
+                            this.successMessage = '';  // Ẩn thông báo sau 5 giây
+                        }, 5000);
+                        this.closeDeleteConfirm();  // Đóng popup xác nhận xóa
+                        this.fetchUsers();  // Tải lại danh sách sản phẩm
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting product:', error);
+                    });
+            }
+        },
     },
-},
-);
+});
 </script>
 
-<!-- <style scoped>
+<style scoped>
 * {
     margin: 0;
     padding: 0;
@@ -402,44 +446,6 @@ body {
     /* Đảm bảo container chiếm toàn bộ chiều rộng của màn hình */
     margin: 0;
     padding: 0;
-}
-
-.sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-}
-
-.sidebar h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-}
-
-.sidebar ul {
-    list-style: none;
-}
-
-.sidebar ul li {
-    margin: 15px 0;
-}
-
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
-
-.router-link-exact-active {
-    background-color: #34495e;
-    /* Màu nền khi trang hiện tại được chọn */
 }
 
 .main-content {
@@ -512,17 +518,6 @@ table .action {
     background-color: #22caca;
 }
 
-.btn-logout {
-    float: right;
-    width: 10%;
-    color: aliceblue;
-    background-color: #2843a5;
-    margin-bottom: 2%;
-}
-
-.btn-logout:hover {
-    background-color: #e74c3c;
-}
 
 /* popup style */
 .popup-form {
@@ -587,8 +582,10 @@ input[type='file'] {
 .form-container div:last-child {
     display: flex;
     justify-content: space-between;
-    width: 100%;  /* Đảm bảo phần tử này chiếm toàn bộ chiều rộng của phần tử chứa */
-    margin-top: 10px;  /* Đảm bảo có khoảng cách giữa các phần tử */
+    width: 100%;
+    /* Đảm bảo phần tử này chiếm toàn bộ chiều rộng của phần tử chứa */
+    margin-top: 10px;
+    /* Đảm bảo có khoảng cách giữa các phần tử */
     display: flex;
     justify-content: space-between;
     /* Đặt 2 nút ngang nhau */
@@ -600,9 +597,11 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    flex: 1;  /* Cho các nút chiếm không gian đều hơn */
+    flex: 1;
+    /* Cho các nút chiếm không gian đều hơn */
     display: inline-block;
-    margin-right: 10px; /* Đảm bảo có khoảng cách giữa 2 nút */
+    margin-right: 10px;
+    /* Đảm bảo có khoảng cách giữa 2 nút */
 }
 
 button+button {
@@ -711,9 +710,10 @@ span {
     margin: 0 10px;
     font-weight: bold;
 }
+
 /* Thêm style cho thông báo lỗi nếu cần */
 .error-message {
     color: red;
     font-size: 12px;
 }
-</style> -->
+</style>

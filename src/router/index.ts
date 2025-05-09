@@ -7,6 +7,7 @@ import AboutPage from "@/components/AboutPage.vue";
 import AdminCategoryPage from "@/components/AdminCategoryPage.vue";
 import AdminProductPage from "@/components/AdminProductPage.vue";
 import AdminUserPage from "@/components/AdminUserPage.vue";
+import ShopPage from "@/components/ShopPage.vue";
 
 Vue.use(Router);
 
@@ -32,6 +33,11 @@ export default new Router({
       path: "/about",
       name: "AboutPage",
       component: AboutPage,
+    },
+    {
+      path: "/shop",
+      name: "ShopPage",
+      component: ShopPage,
     },
     {
       path: "/adminCategory",

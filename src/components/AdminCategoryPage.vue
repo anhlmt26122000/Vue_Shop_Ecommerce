@@ -1,18 +1,9 @@
 <template>
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <h2>Admin Dashboard</h2>
-            <ul>
-                <li><router-link to="/adminCategory" class="side-category">Categories</router-link></li>
-                <li><router-link to="/adminProduct" class="side-product">Products</router-link></li>
-                <li><router-link to="/adminUser" class="side-category">Users</router-link></li>
-            </ul>
-        </div>
-
+        <AdminNav />
         <!-- Main Content -->
         <div class="main-content">
-            <button class="btn-logout">Logout</button>
             <div id="categories" class="content-section">
                 <h3>Categories Management</h3>
                 <p>Manage your categories here.</p>
@@ -144,9 +135,13 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import AdminNav from "@/components/AdminNav.vue"; // Import component AdminNav
 
 export default Vue.extend({
     name: "AdminCategoryPage",
+    components: {
+        AdminNav, // Đăng ký component AdminNav
+    },
     data() {
         return {
             currentPage: 1,  // Trang hiện tại
@@ -369,7 +364,7 @@ export default Vue.extend({
 });
 </script>
 
-<!-- <style scoped>
+<style scoped>
 * {
     margin: 0;
     padding: 0;
@@ -388,44 +383,6 @@ body {
     /* Đảm bảo container chiếm toàn bộ chiều rộng của màn hình */
     margin: 0;
     padding: 0;
-}
-
-.sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-}
-
-.sidebar h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-}
-
-.sidebar ul {
-    list-style: none;
-}
-
-.sidebar ul li {
-    margin: 15px 0;
-}
-
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
-
-.router-link-exact-active {
-    background-color: #34495e;
-    /* Màu nền khi trang hiện tại được chọn */
 }
 
 .main-content {
@@ -494,17 +451,6 @@ table .action {
     background-color: #22caca;
 }
 
-.btn-logout {
-    float: right;
-    width: 10%;
-    color: aliceblue;
-    background-color: #2843a5;
-    margin-bottom: 2%;
-}
-
-.btn-logout:hover {
-    background-color: #e74c3c;
-}
 
 /* popup style */
 .popup-form {
@@ -685,4 +631,4 @@ span {
     margin: 0 10px;
     font-weight: bold;
 }
-</style> -->
+</style>

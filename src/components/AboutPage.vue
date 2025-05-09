@@ -164,7 +164,6 @@
                                         </div>
                                     </div>
                                     <!--End Third slide-->
-
                                 </div>
                                 <!--End Slides-->
                             </div>
